@@ -41,7 +41,7 @@ char *encode(char *src){
 
 int main(){
 
-	char str[] = "heeeeeelllloooo";
+	char str[] = "heeppppopopeeeelllloooo";
 	char *res = encode(str);
 	printf("%s", res);
 	getchar();
