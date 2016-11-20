@@ -29,9 +29,12 @@ void *encode(void  *arg){
 	int i;
 	int k;
 	int j = 0;
-	
+
+	printf("+++++++++++++++++\n");
 	printf("%d\n", args->arg1);
-	printf("%d\n", args->arg2);	
+	printf("%d\n", args->arg2);
+
+	
 
 	for (i = args->arg1; i < args->arg2; i++){
 
@@ -59,35 +62,33 @@ void *encode(void  *arg){
 }
 
 
-int main(){
+int main(int argc, char ** argv){
 
-	char str[] = "heeppppopopeeeelllloooo";
+	char str[] = "aaaaaaaabbbbbbbbbbccccccccccdddddddddeeeeeeeefffffffff";; 
 
-	int * values = partitionInput(5, strlen(str));
+	int partitions = atoi(argv[1]);
+	printf("%d\n", partitions);
+	int * values = partitionInput(partitions, strlen(str));
 	
-	printf("%d\n", values[0]);
-	printf("%d\n", values[1]);
-	printf("%d\n", values[2]);
-	printf("%d\n", values[3]);
-	printf("%d\n", values[4]);
-
-	printf("%lu\n", strlen(str));	
 	
-	pthread_t pth;
+	pthread_t thread[partitions];
 	int i = 0;
 
 	struct arg_struct args; 
 	
-	for (i = 0; i < 4; i++){
+	for (i = 0; i < partitions; i++){
 	
     		args.arg1 = values[i];
-    		args.arg2 = values[i]-1;
+		if (i == partitions-1) {
+    		    args.arg2 = strlen(str);
+		} else {
+    		    args.arg2 = values[i+1] - 1;
+		}
 		args.string = str;
-		pthread_create(&pth, NULL, encode, (void*)&args);
-		
+		pthread_create(&thread[i], NULL, encode, (void*)&args);
+		pthread_join(thread[i], NULL);
 	}
 
-	pthread_join(pth, NULL);
 	return 0;
 	
 		
@@ -101,11 +102,10 @@ int * partitionInput(int numPartitions, int length) {
         int * partitionIndices = (int *)malloc(sizeof(int)*numPartitions);
         partitionIndices[0] = 0;
 
-        int i;
+        int i = 1;
+        for (i = 1; i < numPartitions; i++) {
 
-        for (i = 0; i < numPartitions - 1; i++) {
-
-                if (i == 0) {
+                if (i == 1) {
 
                         partitionIndices[1] = partitionSize + remainder;
 
@@ -113,7 +113,7 @@ int * partitionInput(int numPartitions, int length) {
 
                 else {
 
-                        partitionIndices[i + 1] = partitionIndices[i] + partitionSize;
+                        partitionIndices[i] = partitionIndices[i - 1] + partitionSize;
 
                 }
 
